@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import scrapy
-from bikerio import items
 from scrapy.selector import Selector
 from scrapy.http import HtmlResponse
+from datetime import datetime
+from bikerio import items
+import scrapy
 import re
 
 
@@ -12,20 +13,18 @@ class BikerioMapSpider(scrapy.Spider):
     start_urls = ['https://bikeitau.com.br/bikerio/mapa-das-estacoes/']
 
     def parse(self, response):
-        for element in response.selector.xpath('//ul[@id="infoWind"]/li'):
-            element = Selector(text=element.extract())
-            value_type = None
-            for station_log in element.xpath('//div/descendant-or-self::*/text()'):
-                line = station_log.extract().strip()
-                if re.match(r'\d+ - [\w\s]+', line):
-                    item = items.Station()
-                    station = line.split('-')
-                    item['id'] = station[0].strip()
-                    item['name'] = station[1].strip()
-                    yield item
-                elif 'Vagas Livres' in line:
-                    value_type = 'V'
-                elif 'Bicicletas Disponíveis' in line:
-                    value_type = 'B'
-                elif ':' in line:
-                    value_type = None
+        name_xpath = '//div[@class="infoAdd"]/text()'
+        log_xpath = '//div[@class="infotxt"]/text()'
+        for s in response.selector.xpath('//ul[@id="infoWind"]/li'):
+            s = Selector(text=re.sub(r'[\n\t]', '', s.extract(), 
+                flags=re.MULTILINE))
+            station = items.Station()
+            station['name'] = s.xpath(name_xpath).extract()[0]
+            yield station
+            log = items.StationLog()
+            log['station'] = station['name']
+            log_extracted = s.xpath(log_xpath).extract()
+            log['available_bikes'] = int(log_extracted[0].replace(': ', ''))
+            log['empty_docks'] = int(log_extracted[1].replace(': ', ''))
+            log['crawl_date'] = datetime.now()
+            yield log

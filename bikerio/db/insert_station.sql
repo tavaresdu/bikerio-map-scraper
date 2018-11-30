@@ -1,0 +1,1 @@
+INSERT INTO station(name) VALUES (?);
