@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from bikerio.spiders.bikerio_map import BikerioMapSpider
 from bikerio import items
 import sqlite3
 

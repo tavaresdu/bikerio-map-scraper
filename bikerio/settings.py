@@ -11,7 +11,7 @@ ROBOTSTXT_OBEY = True
 TELNETCONSOLE_ENABLED = False
 
 ITEM_PIPELINES = {
-   'bikerio.pipelines.BikerioPipeline': 300,
+    'bikerio.pipelines.BikerioPipeline': 300,
 }
 
 LOG_STDOUT = True

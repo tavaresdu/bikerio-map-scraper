@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from scrapy.selector import Selector
-from scrapy.http import HtmlResponse
 from datetime import datetime
 from bikerio import items
 import scrapy
